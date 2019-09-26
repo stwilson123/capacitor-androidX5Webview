@@ -9,7 +9,7 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
 
-
+import com.orhanobut.logger.Logger;
 import com.tencent.smtt.export.external.extension.interfaces.IX5WebViewClientExtension;
 import com.tencent.smtt.export.external.interfaces.ConsoleMessage;
 import com.tencent.smtt.export.external.interfaces.GeolocationPermissionsCallback;
@@ -347,6 +347,23 @@ public class BridgeWebChromeClient extends WebChromeClient {
         Log.i(tag, msg);
       }
     }
+
+
+    //TODO adjust to log utility need to modify.
+    if (consoleMessage.message() != null) {
+      String msg = String.format("File: %s - Line %d - Msg: %s" , consoleMessage.sourceId() , consoleMessage.lineNumber(), consoleMessage.message());
+      String level = consoleMessage.messageLevel().name();
+      if ("ERROR".equalsIgnoreCase(level)) {
+        Logger.t(tag).e(msg);
+      } else if ("WARNING".equalsIgnoreCase(level)) {
+        Logger.t(tag).w(msg);
+      } else if ("TIP".equalsIgnoreCase(level)) {
+        Logger.t(tag).d(msg);
+      } else {
+        Logger.t(tag).i(msg);
+      }
+    }
+    
     return true;
   }
 
