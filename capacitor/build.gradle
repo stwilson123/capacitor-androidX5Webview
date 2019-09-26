@@ -52,6 +52,7 @@ dependencies {
   androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
   implementation 'org.apache.cordova:framework:7.0.0'
   implementation 'com.tencent.tbs.tbssdk:sdk:43697'
+  implementation 'com.orhanobut:logger:2.2.0'
 }
 
 def version = System.getenv("BINTRAY_PKG_VERSION")

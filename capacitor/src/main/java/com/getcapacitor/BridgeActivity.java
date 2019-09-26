@@ -57,6 +57,13 @@ public class BridgeActivity extends AppCompatActivity {
     };
     //x5内核初始化接口
     QbSdk.initX5Environment(getApplicationContext(),  cb);
+	
+	  //TODO 添加日志文件
+    Logger.addLogAdapter(new DiskLogAdapter(SingleDiskLogAdapter.WriteHandler.getFormatStrategy(getApplicationContext(),"logger")){
+      @Override public boolean isLoggable(int priority, String tag) {
+        return !BuildConfig.DEBUG;
+      }
+    });
   }
 
   protected void init(Bundle savedInstanceState, List<Class<? extends Plugin>> plugins) {
