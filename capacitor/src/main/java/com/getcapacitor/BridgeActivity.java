@@ -35,11 +35,11 @@ public class BridgeActivity extends AppCompatActivity {
   private CordovaPreferences preferences;
   private MockCordovaWebViewImpl mockWebView;
 
-  private int activityDepth = 0;
+  private int activityDepth =    0;
 
   private String lastActivityPlugin;
 
-  private List<Class<? extends Plugin>> initialPlugins = new ArrayList<>();
+  private List<Class<? extends Plugin>> initialPlugins = new ArrayList<>();   
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
