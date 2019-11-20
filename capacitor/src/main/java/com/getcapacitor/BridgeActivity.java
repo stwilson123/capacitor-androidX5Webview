@@ -54,7 +54,7 @@ public class BridgeActivity extends AppCompatActivity {
 
       if (arg0) {
         Intent intent = new Intent(BridgeActivity.this, NewBridgeActivity.class);
-        onDestroy();
+        finish();
         startActivity(intent);
         overridePendingTransition(0,0);
       } else {
@@ -79,6 +79,7 @@ public class BridgeActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    NewBridgeActivity.Pid = android.os.Process.myPid();
     //TODO 添加日志文件
     Logger.addLogAdapter(new DiskLogAdapter(SingleDiskLogAdapter.WriteHandler.getFormatStrategy(getApplicationContext(),"logger")){
       @Override public boolean isLoggable(int priority, String tag) {

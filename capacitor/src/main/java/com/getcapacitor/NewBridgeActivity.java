@@ -32,6 +32,7 @@ import java.util.List;
 public class NewBridgeActivity extends AppCompatActivity {
   protected Bridge bridge;
   private WebView webView;
+  protected static int  Pid;
   protected MockCordovaInterfaceImpl cordovaInterface;
   protected boolean keepRunning = true;
   private ArrayList<PluginEntry> pluginEntries;
@@ -48,7 +49,6 @@ public class NewBridgeActivity extends AppCompatActivity {
   @Override
   protected void onCreate( Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-
     int X5Version = QbSdk.getTbsVersion(this.getApplicationContext());
     //TODO 添加X5Version日志
     Logger.i("___________________________________________X5Version : "+ X5Version);
@@ -149,7 +149,7 @@ public class NewBridgeActivity extends AppCompatActivity {
   @Override
   public void onResume() {
     super.onResume();
-
+    android.os.Process.killProcess(Pid);
     fireAppStateChanged(true);
 
     this.bridge.onResume();
@@ -158,11 +158,15 @@ public class NewBridgeActivity extends AppCompatActivity {
 
     Log.d(LogUtils.getCoreTag(), "App resumed");
   }
+  @Override
+  public void finish() {
+    super.finish();
+    overridePendingTransition(0, 0);
+  }
 
   @Override
   public void onPause() {
     super.onPause();
-
     this.bridge.onPause();
     if (this.mockWebView != null) {
       boolean keepRunning = this.keepRunning || this.cordovaInterface.getActivityResultCallback() != null;
