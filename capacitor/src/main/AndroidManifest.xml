@@ -5,6 +5,9 @@
         android:required="false" />
 
     <application>
+
+        <activity android:name="com.getcapacitor.NewBridgeActivity"
+            android:theme="@style/AppTheme.NoActionBarLaunch"  ></activity>
         <service android:name="com.getcapacitor.plugin.background.BackgroundTaskService" android:exported="false" />
         <receiver android:name="com.getcapacitor.plugin.notification.TimedNotificationPublisher" />
         <receiver android:name="com.getcapacitor.plugin.notification.NotificationDismissReceiver" />
