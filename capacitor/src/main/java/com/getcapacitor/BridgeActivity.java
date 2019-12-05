@@ -40,7 +40,7 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 public class BridgeActivity extends AppCompatActivity {
 
-  private static final int NOT_NOTICE = 2;//如果勾选了不再询问
+  private static final int NOT_NOTICE = 2;// 如果勾选了不再询问
   private AlertDialog alertDialog;
   private AlertDialog mDialog;
 
@@ -49,19 +49,18 @@ public class BridgeActivity extends AppCompatActivity {
     @Override
     public void onViewInitFinished(boolean arg0) {
       // TODO Auto-generated method stub
-      //x5內核初始化完成的回调，为true表示x5内核加载成功，否则表示x5内核加载失败，会自动切换到系统内核。
+      // x5內核初始化完成的回调，为true表示x5内核加载成功，否则表示x5内核加载失败，会自动切换到系统内核。
       Log.d("App", "app :" + "______________________________________onViewInitFinished is " + arg0);
 
       if (arg0) {
         Intent intent = new Intent(BridgeActivity.this, NewBridgeActivity.class);
         finish();
         startActivity(intent);
-        overridePendingTransition(0,0);
+        overridePendingTransition(0, 0);
       } else {
         InitContext(getApplication(), cb);
       }
     }
-
 
     @Override
     public void onCoreInitFinished() {
@@ -69,79 +68,82 @@ public class BridgeActivity extends AppCompatActivity {
     }
   };
 
-  String[] ManifestPer = new String[]{Manifest.permission.READ_PHONE_STATE,
-          Manifest.permission.WRITE_EXTERNAL_STORAGE,
-          Manifest.permission.ACCESS_NETWORK_STATE,
-          Manifest.permission.ACCESS_WIFI_STATE,
-          Manifest.permission.INTERNET,
-          Manifest.permission.REQUEST_INSTALL_PACKAGES
-  };
+  String[] ManifestPer = new String[] { Manifest.permission.READ_PHONE_STATE,
+      Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_NETWORK_STATE,
+      Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.INTERNET,
+      Manifest.permission.REQUEST_INSTALL_PACKAGES };
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    // TODO 返回到桌面后 处理页面重新打开应用
+    if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
+      finish();
+      return;
+    }
     NewBridgeActivity.Pid = android.os.Process.myPid();
-    //TODO 添加日志文件
-    Logger.addLogAdapter(new DiskLogAdapter(SingleDiskLogAdapter.WriteHandler.getFormatStrategy(getApplicationContext(),"logger")){
-      @Override public boolean isLoggable(int priority, String tag) {
-        return !BuildConfig.DEBUG;
-      }
-    });
+    // TODO 添加日志文件
+    Logger.addLogAdapter(
+        new DiskLogAdapter(SingleDiskLogAdapter.WriteHandler.getFormatStrategy(getApplicationContext(), "logger")) {
+          @Override
+          public boolean isLoggable(int priority, String tag) {
+            return !BuildConfig.DEBUG;
+          }
+        });
     myRequetPermission();
   }
 
-  public  void InitContext(Context var0,QbSdk.PreInitCallback var1){
-    //x5内核初始化接口
+  public void InitContext(Context var0, QbSdk.PreInitCallback var1) {
+    // x5内核初始化接口
     QbSdk.initX5Environment(var0, var1);
   }
 
   private void myRequetPermission() {
     if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PERMISSION_GRANTED) {
       ActivityCompat.requestPermissions(this, ManifestPer, 1);
-    }else{
-      InitContext(getApplicationContext(),cb);
+    } else {
+      InitContext(getApplicationContext(), cb);
     }
   }
+
   @Override
   public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     Context currentContext = this.getApplicationContext();
     boolean isFlag = true;
     if (requestCode == 1) {
-      //x5内核初始化接口
-      InitContext(getApplicationContext(),cb);
+      // x5内核初始化接口
+      InitContext(getApplicationContext(), cb);
       for (int i = 0; i < permissions.length; i++) {
         if (grantResults[i] == PERMISSION_GRANTED) {
           isFlag = true;
         } else {
-          if (!ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[i])){//用户选择了禁止不再询问
+          if (!ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[i])) {// 用户选择了禁止不再询问
 
             AlertDialog.Builder builder = new AlertDialog.Builder(BridgeActivity.this);
-            builder.setTitle("permission")
-                    .setMessage("点击允许才可以使用我们的app哦")
-                    .setPositiveButton("去允许", new DialogInterface.OnClickListener() {
-                      public void onClick(DialogInterface dialog, int id) {
-                        if (mDialog != null && mDialog.isShowing()) {
-                          mDialog.dismiss();
-                        }
-                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        Uri uri = Uri.fromParts("package", getPackageName(), null);//注意就是"package",不用改成自己的包名
-                        intent.setData(uri);
-                        startActivityForResult(intent, NOT_NOTICE);
-                      }
-                    });
-          }else {//选择禁止
+            builder.setTitle("permission").setMessage("点击允许才可以使用我们的app哦").setPositiveButton("去允许",
+                new DialogInterface.OnClickListener() {
+                  public void onClick(DialogInterface dialog, int id) {
+                    if (mDialog != null && mDialog.isShowing()) {
+                      mDialog.dismiss();
+                    }
+                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    Uri uri = Uri.fromParts("package", getPackageName(), null);// 注意就是"package",不用改成自己的包名
+                    intent.setData(uri);
+                    startActivityForResult(intent, NOT_NOTICE);
+                  }
+                });
+          } else {// 选择禁止
             AlertDialog.Builder builder = new AlertDialog.Builder(BridgeActivity.this);
-            builder.setTitle("permission")
-                    .setMessage("点击允许才可以使用我们的app哦")
-                    .setPositiveButton("去允许", new DialogInterface.OnClickListener() {
-                      public void onClick(DialogInterface dialog, int id) {
-                        if (alertDialog != null && alertDialog.isShowing()) {
-                          alertDialog.dismiss();
-                        }
-                        ActivityCompat.requestPermissions(BridgeActivity.this,
-                                ManifestPer, 1);
-                      }
-                    });
+            builder.setTitle("permission").setMessage("点击允许才可以使用我们的app哦").setPositiveButton("去允许",
+                new DialogInterface.OnClickListener() {
+                  public void onClick(DialogInterface dialog, int id) {
+                    if (alertDialog != null && alertDialog.isShowing()) {
+                      alertDialog.dismiss();
+                    }
+                    ActivityCompat.requestPermissions(BridgeActivity.this, ManifestPer, 1);
+                  }
+                });
             alertDialog = builder.create();
             alertDialog.setCanceledOnTouchOutside(false);
             alertDialog.show();
@@ -154,11 +156,12 @@ public class BridgeActivity extends AppCompatActivity {
   protected void init(Bundle savedInstanceState, List<Class<? extends Plugin>> plugins) {
 
   }
+
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
-    if(requestCode==NOT_NOTICE){
-      myRequetPermission();//由于不知道是否选择了允许所以需要再次判断
+    if (requestCode == NOT_NOTICE) {
+      myRequetPermission();// 由于不知道是否选择了允许所以需要再次判断
     }
   }
 }
